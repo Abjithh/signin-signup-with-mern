@@ -14,7 +14,7 @@ export const SignUpPage = () => {
     console.log(username);
     console.log(password);
     try {
-      const response = await Axios.post('http://localhost:8000/', {
+      const response = await Axios.post('http://localhost:8000/signup', {
         email: email,
         username: username,
         password: password
