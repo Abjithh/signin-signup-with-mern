@@ -1,18 +1,19 @@
 import React from 'react';
 import Axios from 'axios';
 import { useState } from 'react';
-import { Container, TextField, Button } from '@material-ui/core';
+import { Container, TextField, Button, Typography } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 export const SignUpPage = () => {
   const [email, setEmail] = useState("")
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const history = useHistory()
+
 
   const handleClick = async (e) => {
     e.preventDefault();
-    console.log(email);
-    console.log(username);
-    console.log(password);
     try {
       const response = await Axios.post('http://localhost:8000/signup', {
         email: email,
@@ -20,8 +21,16 @@ export const SignUpPage = () => {
         password: password
       });
       console.log(response.data);
-    } catch (e) {
-      console.log(e);
+      if( response.status === 201){
+        history.push('./')
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 409){
+        setErrorMessage('Username already exists')
+      } else {
+        console.log(error);
+        setErrorMessage('Failed create user')
+      }
     }
   };
 
@@ -67,6 +76,11 @@ export const SignUpPage = () => {
         fullWidth
         margin='normal'
       />
+      {errorMessage && (
+        <Typography variant="body1" style={{ color: 'red' }}>
+          {errorMessage}
+        </Typography>
+      )}
       <Button
         type='submit'
         onClick={handleClick}

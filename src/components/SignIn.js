@@ -1,25 +1,30 @@
 import React from 'react';
 import Axios from 'axios';
 import { useState } from 'react';
-import { Container, TextField, Button, Link } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
+import { Container, TextField, Button, Link, Typography } from '@material-ui/core';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 
 export const SignInPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const history = useHistory()
 
   const handleClick = async (e) => {
     e.preventDefault();
-    console.log(username);
-    console.log(password);
     try {
-      const response = await Axios.post('http://localhost:8000/', {
+      const response = await Axios.post('http://localhost:8000/signin', {
         username: username,
         password: password
       });
+      if(response.data.message === 'user logged in succesfully'){
+        console.log('login succesfull')
+        history.push('/homepage')
+      }
       console.log(response.data);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage('failed to login')
     }
   };
 
@@ -55,6 +60,9 @@ export const SignInPage = () => {
         fullWidth
         margin='normal'
       />
+       <Typography variant="body1" style={{ color: 'red' }}>
+          {errorMessage}
+        </Typography>
       <Button
         type='submit'
         onClick={handleClick}
